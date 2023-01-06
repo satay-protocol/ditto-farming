@@ -18,7 +18,6 @@ module satay_ditto_farming::test_ditto_farming {
 
     use ditto_staking::mock_ditto_staking::{Self, StakedAptos};
     use satay_ditto_farming::mock_ditto_farming::{Self, DittoFarmingCoin};
-    use liquidity_mining::mock_liquidity_mining;
 
     use satay::math::pow10;
 
@@ -40,14 +39,12 @@ module satay_ditto_farming::test_ditto_farming {
         pool_owner: &signer,
         ditto_farming: &signer,
         ditto_staking: &signer,
-        liquidity_mining: &signer,
         user: &signer,
         initial_liquidity: u64,
         deposit_amount: u64,
     ) {
         stake::initialize_for_test(aptos_framework);
         mock_ditto_staking::initialize_staked_aptos(ditto_staking);
-        mock_liquidity_mining::initialize(liquidity_mining);
 
         test_account::create_account(user);
         test_account::create_account(pool_owner);
@@ -87,7 +84,6 @@ module satay_ditto_farming::test_ditto_farming {
         pool_owner = @liquidswap,
         ditto_farming = @satay_ditto_farming,
         ditto_staking = @ditto_staking,
-        liquidity_mining = @liquidity_mining,
         user = @0x99
     )]
     public fun test_initialize(
@@ -95,7 +91,6 @@ module satay_ditto_farming::test_ditto_farming {
         pool_owner: &signer,
         ditto_farming: &signer,
         ditto_staking: &signer,
-        liquidity_mining: &signer,
         user: &signer
     ) {
         setup_tests(
@@ -103,7 +98,6 @@ module satay_ditto_farming::test_ditto_farming {
             pool_owner,
             ditto_farming,
             ditto_staking,
-            liquidity_mining,
             user,
             to_8_dp(INITIAL_LIQUIDITY),
             to_8_dp(DEPOSIT_AMOUNT),
@@ -118,7 +112,6 @@ module satay_ditto_farming::test_ditto_farming {
         pool_owner = @liquidswap,
         ditto_farming = @satay_ditto_farming,
         ditto_staking = @ditto_staking,
-        liquidity_mining = @liquidity_mining,
         user = @0x99
     )]
     public fun test_deposit(
@@ -126,7 +119,6 @@ module satay_ditto_farming::test_ditto_farming {
         pool_owner: &signer,
         ditto_farming: &signer,
         ditto_staking: &signer,
-        liquidity_mining: &signer,
         user: &signer
     ) {
         let initial_liquidity_amount = to_8_dp(50000);
@@ -136,7 +128,6 @@ module satay_ditto_farming::test_ditto_farming {
             pool_owner,
             ditto_farming,
             ditto_staking,
-            liquidity_mining,
             user,
             initial_liquidity_amount,
             deposit_amount
@@ -144,11 +135,8 @@ module satay_ditto_farming::test_ditto_farming {
         mock_ditto_farming::deposit(user, deposit_amount);
 
         let user_farming_coin_balance = coin::balance<DittoFarmingCoin>(signer::address_of(user));
-        let farming_account_lp_balance = mock_liquidity_mining::get_lp_amount();
 
         assert!(user_farming_coin_balance > 0, ERR_DEPOSIT);
-        assert!(farming_account_lp_balance > 0, ERR_DEPOSIT);
-        assert!(farming_account_lp_balance == user_farming_coin_balance, ERR_DEPOSIT);
 
         let (apt_reserves, stapt_reserves) = router_v2::get_reserves_size<AptosCoin, StakedAptos, Stable>();
         assert!(apt_reserves == initial_liquidity_amount + deposit_amount / 2, ERR_DEPOSIT);
@@ -160,7 +148,6 @@ module satay_ditto_farming::test_ditto_farming {
         pool_owner = @liquidswap,
         ditto_farming = @satay_ditto_farming,
         ditto_staking = @ditto_staking,
-        liquidity_mining = @liquidity_mining,
         user = @0x99
     )]
     public fun test_deposit_zero(
@@ -168,7 +155,6 @@ module satay_ditto_farming::test_ditto_farming {
         pool_owner: &signer,
         ditto_farming: &signer,
         ditto_staking: &signer,
-        liquidity_mining: &signer,
         user: &signer
     ) {
         let initial_liquidity_amount = to_8_dp(50000);
@@ -178,7 +164,6 @@ module satay_ditto_farming::test_ditto_farming {
             pool_owner,
             ditto_farming,
             ditto_staking,
-            liquidity_mining,
             user,
             initial_liquidity_amount,
             deposit_amount
@@ -202,7 +187,6 @@ module satay_ditto_farming::test_ditto_farming {
         pool_owner = @liquidswap,
         ditto_farming = @satay_ditto_farming,
         ditto_staking = @ditto_staking,
-        liquidity_mining = @liquidity_mining,
         user = @0x99
     )]
     public fun test_withdraw(
@@ -210,7 +194,6 @@ module satay_ditto_farming::test_ditto_farming {
         pool_owner: &signer,
         ditto_farming: &signer,
         ditto_staking: &signer,
-        liquidity_mining: &signer,
         user: &signer
     ) {
         let initial_liquidity_amount = to_8_dp(50000);
@@ -220,7 +203,6 @@ module satay_ditto_farming::test_ditto_farming {
             pool_owner,
             ditto_farming,
             ditto_staking,
-            liquidity_mining,
             user,
             initial_liquidity_amount,
             deposit_amount
@@ -245,7 +227,6 @@ module satay_ditto_farming::test_ditto_farming {
         pool_owner = @liquidswap,
         ditto_farming = @satay_ditto_farming,
         ditto_staking = @ditto_staking,
-        liquidity_mining = @liquidity_mining,
         user = @0x99
     )]
     #[expected_failure]
@@ -254,7 +235,6 @@ module satay_ditto_farming::test_ditto_farming {
         pool_owner: &signer,
         ditto_farming: &signer,
         ditto_staking: &signer,
-        liquidity_mining: &signer,
         user: &signer
     ) {
         let initial_liquidity_amount = to_8_dp(100);
@@ -264,7 +244,6 @@ module satay_ditto_farming::test_ditto_farming {
             pool_owner,
             ditto_farming,
             ditto_staking,
-            liquidity_mining,
             user,
             initial_liquidity_amount,
             deposit_amount
@@ -280,7 +259,6 @@ module satay_ditto_farming::test_ditto_farming {
         pool_owner = @liquidswap,
         ditto_farming = @satay_ditto_farming,
         ditto_staking = @ditto_staking,
-        liquidity_mining = @liquidity_mining,
         user = @0x99
     )]
     #[expected_failure]
@@ -289,7 +267,6 @@ module satay_ditto_farming::test_ditto_farming {
         pool_owner: &signer,
         ditto_farming: &signer,
         ditto_staking: &signer,
-        liquidity_mining: &signer,
         user: &signer
     ) {
         let initial_liquidity_amount = to_8_dp(100);
@@ -299,7 +276,6 @@ module satay_ditto_farming::test_ditto_farming {
             pool_owner,
             ditto_farming,
             ditto_staking,
-            liquidity_mining,
             user,
             initial_liquidity_amount,
             deposit_amount
@@ -324,7 +300,6 @@ module satay_ditto_farming::test_ditto_farming {
         pool_owner = @liquidswap,
         ditto_farming = @satay_ditto_farming,
         ditto_staking = @ditto_staking,
-        liquidity_mining = @liquidity_mining,
         user = @0x99
     )]
     public fun test_set_manager(
@@ -332,7 +307,6 @@ module satay_ditto_farming::test_ditto_farming {
         pool_owner: &signer,
         ditto_farming: &signer,
         ditto_staking: &signer,
-        liquidity_mining: &signer,
         user: &signer
     ) {
         setup_tests(
@@ -340,7 +314,6 @@ module satay_ditto_farming::test_ditto_farming {
             pool_owner,
             ditto_farming,
             ditto_staking,
-            liquidity_mining,
             user,
             to_8_dp(INITIAL_LIQUIDITY),
             to_8_dp(DEPOSIT_AMOUNT)
@@ -356,7 +329,6 @@ module satay_ditto_farming::test_ditto_farming {
         pool_owner = @liquidswap,
         ditto_farming = @satay_ditto_farming,
         ditto_staking = @ditto_staking,
-        liquidity_mining = @liquidity_mining,
         user = @0x99
     )]
     #[expected_failure]
@@ -365,7 +337,6 @@ module satay_ditto_farming::test_ditto_farming {
         pool_owner: &signer,
         ditto_farming: &signer,
         ditto_staking: &signer,
-        liquidity_mining: &signer,
         user: &signer
     ) {
         setup_tests(
@@ -373,7 +344,6 @@ module satay_ditto_farming::test_ditto_farming {
             pool_owner,
             ditto_farming,
             ditto_staking,
-            liquidity_mining,
             user,
             to_8_dp(INITIAL_LIQUIDITY),
             to_8_dp(DEPOSIT_AMOUNT)
@@ -386,7 +356,6 @@ module satay_ditto_farming::test_ditto_farming {
         pool_owner = @liquidswap,
         ditto_farming = @satay_ditto_farming,
         ditto_staking = @ditto_staking,
-        liquidity_mining = @liquidity_mining,
         user = @0x99,
         user2 = @0x98
     )]
@@ -396,7 +365,6 @@ module satay_ditto_farming::test_ditto_farming {
         pool_owner: &signer,
         ditto_farming: &signer,
         ditto_staking: &signer,
-        liquidity_mining: &signer,
         user: &signer,
         user2: &signer
     ) {
@@ -405,7 +373,6 @@ module satay_ditto_farming::test_ditto_farming {
             pool_owner,
             ditto_farming,
             ditto_staking,
-            liquidity_mining,
             user,
             to_8_dp(INITIAL_LIQUIDITY),
             to_8_dp(DEPOSIT_AMOUNT)
@@ -419,7 +386,6 @@ module satay_ditto_farming::test_ditto_farming {
         pool_owner = @liquidswap,
         ditto_farming = @satay_ditto_farming,
         ditto_staking = @ditto_staking,
-        liquidity_mining = @liquidity_mining,
         user = @0x99
     )]
     public fun test_set_lp_slippage_tolerance(
@@ -427,7 +393,6 @@ module satay_ditto_farming::test_ditto_farming {
         pool_owner: &signer,
         ditto_farming: &signer,
         ditto_staking: &signer,
-        liquidity_mining: &signer,
         user: &signer
     ) {
         setup_tests(
@@ -435,7 +400,6 @@ module satay_ditto_farming::test_ditto_farming {
             pool_owner,
             ditto_farming,
             ditto_staking,
-            liquidity_mining,
             user,
             to_8_dp(INITIAL_LIQUIDITY),
             to_8_dp(DEPOSIT_AMOUNT)
@@ -450,7 +414,6 @@ module satay_ditto_farming::test_ditto_farming {
         pool_owner = @liquidswap,
         ditto_farming = @satay_ditto_farming,
         ditto_staking = @ditto_staking,
-        liquidity_mining = @liquidity_mining,
         user = @0x99
     )]
     #[expected_failure]
@@ -459,7 +422,6 @@ module satay_ditto_farming::test_ditto_farming {
         pool_owner: &signer,
         ditto_farming: &signer,
         ditto_staking: &signer,
-        liquidity_mining: &signer,
         user: &signer
     ) {
         setup_tests(
@@ -467,7 +429,6 @@ module satay_ditto_farming::test_ditto_farming {
             pool_owner,
             ditto_farming,
             ditto_staking,
-            liquidity_mining,
             user,
             to_8_dp(INITIAL_LIQUIDITY),
             to_8_dp(DEPOSIT_AMOUNT)
@@ -481,7 +442,6 @@ module satay_ditto_farming::test_ditto_farming {
         pool_owner = @liquidswap,
         ditto_farming = @satay_ditto_farming,
         ditto_staking = @ditto_staking,
-        liquidity_mining = @liquidity_mining,
         user = @0x99
     )]
     #[expected_failure]
@@ -490,7 +450,6 @@ module satay_ditto_farming::test_ditto_farming {
         pool_owner: &signer,
         ditto_farming: &signer,
         ditto_staking: &signer,
-        liquidity_mining: &signer,
         user: &signer
     ) {
         setup_tests(
@@ -498,7 +457,6 @@ module satay_ditto_farming::test_ditto_farming {
             pool_owner,
             ditto_farming,
             ditto_staking,
-            liquidity_mining,
             user,
             to_8_dp(INITIAL_LIQUIDITY),
             to_8_dp(DEPOSIT_AMOUNT)
@@ -512,7 +470,6 @@ module satay_ditto_farming::test_ditto_farming {
         pool_owner = @liquidswap,
         ditto_farming = @satay_ditto_farming,
         ditto_staking = @ditto_staking,
-        liquidity_mining = @liquidity_mining,
         user = @0x99
     )]
     public fun test_set_swap_slippage_tolerance(
@@ -520,7 +477,6 @@ module satay_ditto_farming::test_ditto_farming {
         pool_owner: &signer,
         ditto_farming: &signer,
         ditto_staking: &signer,
-        liquidity_mining: &signer,
         user: &signer
     ) {
         setup_tests(
@@ -528,7 +484,6 @@ module satay_ditto_farming::test_ditto_farming {
             pool_owner,
             ditto_farming,
             ditto_staking,
-            liquidity_mining,
             user,
             to_8_dp(INITIAL_LIQUIDITY),
             to_8_dp(DEPOSIT_AMOUNT)
@@ -543,7 +498,6 @@ module satay_ditto_farming::test_ditto_farming {
         pool_owner = @liquidswap,
         ditto_farming = @satay_ditto_farming,
         ditto_staking = @ditto_staking,
-        liquidity_mining = @liquidity_mining,
         user = @0x99
     )]
     #[expected_failure]
@@ -552,7 +506,6 @@ module satay_ditto_farming::test_ditto_farming {
         pool_owner: &signer,
         ditto_farming: &signer,
         ditto_staking: &signer,
-        liquidity_mining: &signer,
         user: &signer
     ) {
         setup_tests(
@@ -560,7 +513,6 @@ module satay_ditto_farming::test_ditto_farming {
             pool_owner,
             ditto_farming,
             ditto_staking,
-            liquidity_mining,
             user,
             to_8_dp(INITIAL_LIQUIDITY),
             to_8_dp(DEPOSIT_AMOUNT)
@@ -574,7 +526,6 @@ module satay_ditto_farming::test_ditto_farming {
         pool_owner = @liquidswap,
         ditto_farming = @satay_ditto_farming,
         ditto_staking = @ditto_staking,
-        liquidity_mining = @liquidity_mining,
         user = @0x99
     )]
     #[expected_failure]
@@ -583,7 +534,6 @@ module satay_ditto_farming::test_ditto_farming {
         pool_owner: &signer,
         ditto_farming: &signer,
         ditto_staking: &signer,
-        liquidity_mining: &signer,
         user: &signer
     ) {
         setup_tests(
@@ -591,7 +541,6 @@ module satay_ditto_farming::test_ditto_farming {
             pool_owner,
             ditto_farming,
             ditto_staking,
-            liquidity_mining,
             user,
             to_8_dp(INITIAL_LIQUIDITY),
             to_8_dp(DEPOSIT_AMOUNT)

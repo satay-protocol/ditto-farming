@@ -9,7 +9,12 @@ satay_ditto_farming = "0xe3eaddfcc4d7436d26fef92ee39685ef176e3513dc736d116129ce0
 git = "https://github.com/satay-protocol/satay-aptos"
 rev = "main"
 
-[dependencies.ditto-liquidity-mining]
+[dependencies.LiquidswapRouterV2]
+git = 'https://github.com/pontem-network/liquidswap'
+rev = 'v0.4.3'
+subdir = './liquidswap_router_v2'
+
+[dependencies.ditto-staking]
 git = "https://github.com/satay-protocol/partner-interfaces"
 rev = "master"
-subdir = "ditto-lm-interface"
+subdir = "ditto-staking-interface"

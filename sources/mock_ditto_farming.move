@@ -20,7 +20,6 @@ module satay_ditto_farming::mock_ditto_farming {
     };
 
     use ditto_staking::mock_ditto_staking::{Self, StakedAptos};
-    use liquidity_mining::mock_liquidity_mining;
 
     use satay::math::{calculate_proportion_of_u64_with_u64_denominator, pow10, mul_div};
 
@@ -298,10 +297,6 @@ module satay_ditto_farming::mock_ditto_farming {
         let lp_coin_amount = coin::value(&lp_coins);
 
         coin::deposit(ditto_farming_addr, lp_coins);
-        mock_liquidity_mining::stake<LP<AptosCoin, StakedAptos, Stable>>(
-            ditto_farming_signer,
-            lp_coin_amount
-        );
         coin::mint<DittoFarmingCoin>(
             lp_coin_amount,
             &farming_coin_caps.mint_cap
@@ -318,10 +313,6 @@ module satay_ditto_farming::mock_ditto_farming {
     ) : Coin<LP<AptosCoin, StakedAptos, Stable>> acquires DittoFarmingCoinCaps {
         // unstake amount of LP for given amount of DittoFarmingCoin
         let farming_coin_amount = coin::value<DittoFarmingCoin>(&ditto_farming_coins);
-        mock_liquidity_mining::unstake<LP<AptosCoin, StakedAptos, Stable>>(
-            ditto_farming_signer,
-            farming_coin_amount
-        );
         // burn farming coin
         let farming_account_addr = signer::address_of(ditto_farming_signer);
         let farming_coin_caps = borrow_global<DittoFarmingCoinCaps>(farming_account_addr);
